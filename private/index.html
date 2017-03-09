@@ -1,0 +1,181 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>湖南师大附中2011级大理实蹭饭地图 - By Jack.H</title>
+<link rel="stylesheet" type="text/css" href="../main.css" />
+<style type="text/css">
+.demo{width:760px; height:520px; margin:40px auto 0 auto; font-size:14px;}
+#map{width:600px; margin:10px auto}
+#label{width:200px; height:25px; line-height:25px; margin:10px auto}
+#label span{height:25px; width:25px; display:block; float:left; text-align:center}
+</style>
+<script type="text/javascript" src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript" src="../raphael.js"></script>
+<script type="text/javascript" src="../chinamapPath.js"></script>
+<script src="http://res.xiami.net/pc/lay/lib.js"></script>
+<script src="../layer/layer.min.js"></script>
+</head>
+
+<body>
+
+<div id="main">
+   <h2 class="top_title"><p><a href="../">湖南师大附中2011级大理实蹭饭地图 - By Jack.H [返回]</a></p></h2>
+   <div class="demo">
+   		<div id="label">
+        	<span>多</span>
+            <span style="background-color:#005c86"></span>
+            <span style="background-color:#0084be"></span>
+            <span style="background-color:#00a2e9"></span>
+            <span style="background-color:#3fbeef"></span>
+            <span style="background-color:#97d6f5"></span>
+            <span style="background-color:#d7eef8"></span>
+            <span>少</span>
+        </div>
+		<a href="javascript:layerFunction(-1)">总表(162人)</a>&nbsp;&nbsp;&nbsp;<a href="javascript:layerFunction(34)">海外同学(5人)</a>
+   		<div id="map"></div>
+   </div>
+	
+   <br/><br/>
+</div>
+
+<script type="text/javascript">	
+//layer载入
+function layerFunction(i)
+{
+  	var adr;
+	adr = i+1; 
+	$.layer({
+    type: 2,
+    maxmin: true,
+    shadeClose: true,
+    title: '同学名单及联系方式',
+    shade: [0.1,'#fff'],
+    offset: ['20px',''],
+    area: ['1000px', ($(window).height() - 50) +'px'],
+    iframe: {src: "province/"+adr+".htm"}
+   }); 
+}
+
+//数据分组(颜色)
+$(function(){
+	$.get("../json.php",function(json){
+	var data = string2Array(json);
+	
+	var flag;
+	var arr = new Array();
+	for(var i=0;i<data.length;i++){
+		var d = data[i];
+		if(d<1){
+			flag = 0;
+		}else if(d>=1 && d<5){
+			flag = 1;
+		}else if(d>=5 && d<10){
+			flag = 2;
+		}else if(d>=10 && d<16){
+			flag = 3;
+		}else if(d>=16 && d<50){
+			flag = 4;
+		}else{
+			flag = 5;
+		}
+		arr.push(flag);
+	}
+	var colors = ["#d7eef8","#97d6f5","#3fbeef","#00a2e9","#0084be","#005c86"];
+    var R = Raphael("map", 600, 500);
+	
+	//调用绘制地图方法
+    paintMap(R);
+	
+	var textAttr = {
+        "fill": "#000",
+        "font-size": "12px",
+        "cursor": "pointer"
+    };
+    var i=0;
+    for (var state in china) {
+		china[state]['path'].color = Raphael.getColor(0.9);
+        (function (st, state) {
+			
+			//获取当前图形的中心坐标
+            var xx = st.getBBox().x + (st.getBBox().width / 2);
+            var yy = st.getBBox().y + (st.getBBox().height / 2);
+			
+            //***修改部分地图文字偏移坐标
+            switch (china[state]['name']) {
+                case "江苏":
+                    xx += 5;
+                    yy -= 10;
+                    break;
+                case "河北":
+                    xx -= 10;
+                    yy += 20;
+                    break;
+                case "天津":
+                    xx += 10;
+                    yy += 10;
+                    break;
+                case "上海":
+                    xx += 10;
+                    break;
+                case "广东":
+                    yy -= 10;
+                    break;
+                case "澳门":
+                    yy += 10;
+                    break;
+                case "香港":
+                    xx += 20;
+                    yy += 5;
+                    break;
+                case "甘肃":
+                    xx -= 40;
+                    yy -= 30;
+                    break;
+                case "陕西":
+                    xx += 5;
+                    yy += 10;
+                    break;
+                case "内蒙古":
+                    xx -= 15;
+                    yy += 65;
+                    break;
+                default:
+            }
+			//写入文字
+			china[state]['text'] = R.text(xx, yy, china[state]['name']).attr(textAttr).attr('href','javascript:layerFunction('+String(i)+')');
+			var fillcolor = colors[arr[i]];
+			
+			st.attr({fill:fillcolor});//填充背景色
+			
+			st[0].onmouseover = function () {
+                st.animate({fill: "#fdd", stroke: "#eee"}, 500);
+				china[state]['text'].toFront();
+                R.safari();
+            };
+            st[0].onmouseout = function () {
+                st.animate({fill: fillcolor, stroke: "#eee"}, 500);
+				china[state]['text'].toFront();
+                R.safari();
+            };
+
+					
+         })(china[state]['path'], state);
+		 i++;
+    }
+	});
+});
+
+function string2Array(string) { 
+	eval("var result = " + decodeURI(string)); 
+	return result; 
+}
+
+</script>
+
+<div id="footer">
+    <p>Copyright &copy; 2014 <a href="http://www.jackh.cn" target="_blank">Jack.H</a> All Rights Reserved.</br>Powered by <a href="http://bbs.etengpc.com">ETENG</a> &copy; 2009-2014 All Rights Reserved.</p>
+</div>
+<script type="text/javascript" src="http://tajs.qq.com/stats?sId=5355312" charset="UTF-8"></script>
+</body>
+</html>
