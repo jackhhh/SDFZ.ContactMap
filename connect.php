@@ -1,8 +1,8 @@
 <?php
 $host="localhost";
-$db_user="lovefz_map";
-$db_pass="hnsdfz2015";
-$db_name="lovefz_map";
+$db_user="dbuser";
+$db_pass="dbpass";
+$db_name="dbname";
 $timezone="Asia/Shanghai";
 
 $link=mysql_connect($host,$db_user,$db_pass);
